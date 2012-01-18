@@ -38,43 +38,94 @@ class RTM {
 
     private $appKey;
     private $appSecret;
+    private $permissions;
 
-    public function __construct($appKey = '', $appSecret = '') {
+    /**
+    * CONSTRUCTOR
+    */
+    public function __construct($appKey = '', $appSecret = '', $permissions = 'read', $format='json') {
         if(empty($appKey) || empty($appSecret)) {
             throw new RtmApiError('Error: App Key and/or Secret Key must be defined.');
         }
 
         $this->appKey = $appKey;
         $this->appSecret = $appSecret;
+        $this->permissions = $permissions;
+        $this->format = $format;
     }
 
     /**
      * Encodes request parameters into URL format 
      * 
      * @param params    Array of parameters to be URL encoded
+     * @param signed    Boolean specfying whether or not the URL should be signed
      * @return          Returns the URL encoded string of parameters
      */
-    private function encodeUrlParams($params = array()) {
+    private function encodeUrlParams($params = array(), $signed = false) {
         $paramString = '';
+
         if(!empty($params)) {
+            $count = 0;
+
+            // Encode the parameter keys and values
             foreach($params as $key => $value) {
-                $paramString .= '&'.$key.'='.urlencode($value);
+                if($count == 0){
+                    $paramString .= '?'.$key.'='.urlencode($value);
+                }else {
+                    $paramString .= '&'.$key.'='.urlencode($value);
+                }
+                $count++;
             }
+
+            // Encode and append the response format paramter
+            $paramString .= '&format='.$this->format;
+
+            // Append an auth signature if needed
+            if($signed) {
+                $paramString .= $this->generateSig($params);
+            }
+        }else {
+            throw new RtmApiError("Error: There are no parameters to encode.");
         }
+
         return $paramString;
     }
 
     /**
-     * Main method for making authentication based requests
+     * Generates a URL encoded authentication signature
      * 
-     * @param method    Specifies what API method to be used
-     * @param params    Array of API parameters to accompany the method parameter
-     * @param format    Specifies the response format, defaults to json
+     * @param params    The parameters used to generate the signature
+     * @return          Returns the URL encoded authentication signature
+     */
+    private function generateSig($params = array()) {
+        $params['format'] = $this->format;
+
+        ksort($params);
+        $signature = '';
+        $signatureUrl = '&api_sig=';
+
+        foreach($params as $key => $value) {
+            $signature .= $key.$value;
+        }
+
+        $signature = $this->appSecret.$signature;
+        $signatureUrl .= md5($signature);
+
+        return $signatureUrl;
+    }
+
+    /**
+     * Generates a RTM authentication URL
+     * 
      * @return          Returns the reponse from the RTM API
      */
-    public function auth($method = '', $params = array(), $format='json') {
-        //Gotta do this method still!
-        return true;
+    public function getAuthUrl() {
+        $params = array(
+            "api_key" => $this->appKey,
+            "perms" => $this->permissions
+        );
+        $url = $this->authUrl.$this->encodeUrlParams($params, true);
+        return $url;
     }
 
     /**
