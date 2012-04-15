@@ -39,13 +39,14 @@ class RTM {
     private $appKey;
     private $appSecret;
     private $permissions;
+    private $format;
 
     /**
     * CONSTRUCTOR
     */
     public function __construct($appKey = '', $appSecret = '', $permissions = 'read', $format='json') {
         if(empty($appKey) || empty($appSecret)) {
-            throw new RtmApiError('Error: App Key and/or Secret Key must be defined.');
+            throw new RtmApiError('Error: App Key and Secret Key must be defined.');
         }
 
         $this->appKey = $appKey;
@@ -133,21 +134,24 @@ class RTM {
      * 
      * @param method    Specifies what API method to be used
      * @param params    Array of API parameters to accompany the method parameter
-     * @param format    Specifies the response format, defaults to json
      * @return          Returns the reponse from the RTM API
      */
-    public function get($method = '', $params = array(), $format = 'json') {
+    public function get($method = '', $params = array()) {
         if(empty($method)) {
             throw new RtmApiError('Error: API Method must be defined.');
         }
 
-        $requestUrl = $baseUrl.'?method='.$method.$this->encodeUrlParams($params);
+        // Append method to params for encoding the url params
+        $params['method'] = $method;
+        $requestUrl = $this->baseUrl.$this->encodeUrlParams($params, true);
 
         $c = curl_init();
         curl_setopt($c, CURLOPT_URL, $requestUrl);
         curl_setopt($c, CURLOPT_RETURNTRANSFER, True);
-        $reponse = ($format == 'json') ? json_decode(curl_exec($c)) : curl_exec($c);
+        $response = curl_exec($c);
 
+        // Decode JSON if format is json
+        $response = ($this->format == 'json') ? json_decode($response) : $response;
         return $response;
     }
 }
