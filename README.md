@@ -3,15 +3,53 @@
 
 ##Description
 **Author**: Adam Magaña &lt;adammagana@gmail.com&gt;  
-**Last Edit**: April 15th, 2012  
+**Last Edit**: April 18th, 2012  
 **Version**: 0.0.1
 
 ##Usage
-
-```php
-require('rtm.php');
-$rtm = new RTM(APP_KEY, APP_SECRET);
+###Constructor
 ```
+require('rtm.php');
+$rtm = new RTM(APP_KEY, APP_SECRET, PERMISSIONS, FORMAT);
+```
+<table>
+    <tr>
+        <th>Parameter</th>
+        <th>Type</th>
+        <th>Default</th>
+        <th>Description</th>
+    </tr>
+    <tr>
+        <td>APP_KEY</td>
+        <td>string</td>
+        <td>none (required)</td>
+        <td>Your RTM application's public key.</td>
+    </tr>
+    <tr>
+        <td>APP_SECRET</td>
+        <td>string</td>
+        <td>none (required)</td>
+        <td>Your RTM application's secret key.</td>
+    </tr>
+    <tr>
+        <td>PERMISSIONS</td>
+        <td>string</td>
+        <td>read</td>
+        <td>The RTM permission level your application requests from a user.</td>
+    </tr>
+    <tr>
+        <td>FORMAT</td>
+        <td>string</td>
+        <td>json</td>
+        <td>The RTM API response format. Value can be either 'json' or 'rest'.</td>
+    </tr>
+</table>
+
+###Generate Authentication URL
+```
+$authUrl = $rtm->getAuthUrl();
+```
+The value of `$authUrl` will be a RTM formatted authentication URL containing your API Key, permission level, response format, and signature.
 
 ##License 
 
