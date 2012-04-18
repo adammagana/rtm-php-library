@@ -3,12 +3,15 @@
 
 ##Description
 **Author**: Adam Magaña &lt;adammagana@gmail.com&gt;  
-**Last Edit**: September 9th, 2011  
+**Last Edit**: April 15th, 2012  
 **Version**: 0.0.1
 
 ##Usage
 
-*Coming soon!*
+```php
+require('rtm.php');
+$rtm = new RTM(APP_KEY, APP_SECRET);
+```
 
 ##License 
 
