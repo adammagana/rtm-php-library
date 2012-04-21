@@ -8,9 +8,11 @@
 
 ##Usage
 ###Constructor
-```
-require('rtm.php');
-$rtm = new RTM(APP_KEY, APP_SECRET, PERMISSIONS, FORMAT);
+```php
+<?php
+    require('rtm.php');
+    $rtm = new RTM(APP_KEY, APP_SECRET, PERMISSIONS, FORMAT);
+?>
 ```
 <table>
     <tr>
@@ -46,8 +48,8 @@ $rtm = new RTM(APP_KEY, APP_SECRET, PERMISSIONS, FORMAT);
 </table>
 
 ###Generate Authentication URL
-```
-$authUrl = $rtm->getAuthUrl();
+```php
+<?php $authUrl = $rtm->getAuthUrl(); ?>
 ```
 The value of `$authUrl` will be a RTM formatted authentication URL containing your API Key, permission level, response format, and signature.
 
